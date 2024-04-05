@@ -24,6 +24,8 @@ local instructions = [[
     delete: run garbage collector
 ]]
 
+local shouldDrawSpeechBox = false
+
 local cols_len = 0 -- how many collisions are happening
 
 -- World creation
@@ -148,19 +150,38 @@ math.randomseed(os.time())
 end
 
 local function charInteract()
-	if 0 < player.x and player.x < 100 and 0 < player.y and player.y < 100 then
-		love.event.quit()
+	if player.x < 100 and player.y < 100 then
+		shouldDrawSpeechBox = true
+		-- love.event.quit()
 	end
+end
+
+local function speechUpdate()
+	if player.x > 100 or player.y 
+		> 100 then
+		shouldDrawSpeechBox = false
+		-- love.event.quit()
+	end
+end
+
+local function drawSpeechBox()
+	love.graphics.rectangle('fill', 0, 600-96, 800, 96)
+	love.graphics.setColor(0,0,0,255)
+	love.graphics.print("hello keira, if you are seeing this message my code has maybe worked. or ur reading the code", 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
 end
 
 function love.update(dt)
   checkCharacterCollsion()
   cols_len = 0
   updatePlayer(dt)
+  speechUpdate()
 end
 
 function love.draw()
   love.graphics.draw(my_background)
+  if shouldDrawSpeechBox then
+  	drawSpeechBox()
+  end
   drawBlocks()
   drawPlayer()
   if shouldDrawDebug then
@@ -175,5 +196,6 @@ function love.keypressed(k)
   if k=="escape" then love.event.quit() end
   if k=="tab"    then shouldDrawDebug = not shouldDrawDebug end
   if k=="delete" then collectgarbage("collect") end
-  if k=="return" then charInteract() end
+  if k=="return" then 
+  	charInteract() end
 end
