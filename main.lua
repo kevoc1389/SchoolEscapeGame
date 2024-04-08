@@ -8,8 +8,6 @@ local time_passed = 0
 local current_letter = 0
 local characterMessage = "character dialogue: \ncrabs"
 
-
-
 if love.getVersion == nil or love.getVersion() < 11 then
   local origSetColor = love.graphics.setColor
   love.graphics.setColor = function (r, g, b, a)
