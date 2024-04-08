@@ -3,6 +3,12 @@ local bump_debug = require 'bump_debug'
 
 local my_background = love.graphics.newImage('img_hero_header_background.jpg')
 
+local time_per_letter = .01
+local time_passed = 0
+local current_letter = 0
+local characterMessage = "character dialogue: \ncrabs"
+
+
 
 if love.getVersion == nil or love.getVersion() < 11 then
   local origSetColor = love.graphics.setColor
@@ -19,7 +25,7 @@ end
 local instructions = [[
     bump.lua simple demo
 
-    arrows: move
+    wasd: move
     tab: toggle debug info
     delete: run garbage collector
 ]]
@@ -156,25 +162,32 @@ local function charInteract()
 	end
 end
 
-local function speechUpdate()
+local function speechUpdate(dt)
 	if player.x > 100 or player.y 
 		> 100 then
 		shouldDrawSpeechBox = false
-		-- love.event.quit()
-	end
+  else
+    time_passed = time_passed + dt
+    if time_passed >= time_per_letter then
+      time_passed = 0
+      current_letter = current_letter + 1
+    end
+  end
 end
 
 local function drawSpeechBox()
+  love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
 	love.graphics.rectangle('fill', 0, 600-96, 800, 96)
 	love.graphics.setColor(0,0,0,255)
-	love.graphics.print("hello keira, if you are seeing this message my code has maybe worked. or ur reading the code", 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
+  local chars = characterMessage:sub(1, current_letter)
+	love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
 end
 
 function love.update(dt)
   checkCharacterCollsion()
   cols_len = 0
   updatePlayer(dt)
-  speechUpdate()
+  speechUpdate(dt)
 end
 
 function love.draw()
@@ -197,5 +210,6 @@ function love.keypressed(k)
   if k=="tab"    then shouldDrawDebug = not shouldDrawDebug end
   if k=="delete" then collectgarbage("collect") end
   if k=="return" then 
+    current_letter = 0
   	charInteract() end
 end
