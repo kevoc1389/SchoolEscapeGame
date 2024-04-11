@@ -34,7 +34,7 @@ local cols_len = 0 -- how many collisions are happening
 
 -- World creation
 local world = bump.newWorld()
-
+--keira was here
 
 -- Message/debug functions
 local function drawMessage()
