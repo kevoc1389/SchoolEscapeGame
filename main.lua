@@ -9,14 +9,8 @@ local time_per_letter = .01
 local time_passed = 0
 local current_letter = 0
 local roomNumber = 0 --default is 0
+local worldLoaded = false
 local characterMessage = "character dialogue: \ncrabs"
-
-local instructions = [[
-    use wasd to move
-    use e to interact with characters 
-    use esc to quit
-    use the respective number keys to select a room
-]]
 
 local shouldDrawSpeechBox = false
 
@@ -33,6 +27,9 @@ local function drawBox(box, r,g,b)
   love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
 end
 
+function love.load()
+  math.randomseed(os.time())
+end
 
 
 -- Player functions
@@ -41,7 +38,7 @@ local player = { x=50,y=50,w=20,h=20, speed = 200 }
 local function updatePlayer(dt)
   local speed = player.speed
 
-  if roomNumber ~= 0 then 
+  if roomNumber ~= 0 then
     local dx, dy = 0, 0
     if love.keyboard.isDown('d') then
       dx = speed * dt
@@ -83,8 +80,19 @@ end
 -- Main LÖVE functions
 
   --this would be room one or Ms.Wangs Room, we can add more in the future.
-  if roomNumber == 1 then
+  local function drawWorld()
+  if roomNumber == 1 and worldLoaded == false then
     world:add(player, player.x, player.y, player.w, player.h)
+
+    addBlock(0,       0,     800, 32)
+    addBlock(0,      32,      32, 600-32*2)
+    addBlock(800-32, 32,      32, 600-32*2)
+    addBlock(0,      600-32, 800, 32)
+
+    addBlock(100, 100, 50, 50)
+   
+    worldLoaded = true
+  end
 end
 
 local function charInteract()
@@ -95,7 +103,7 @@ local function charInteract()
 end
 
 local function speechUpdate(dt)
-  if player.x > 100 or player.y 
+  if player.x > 100 or player.y
     > 100 then
     shouldDrawSpeechBox = false
   else
@@ -136,7 +144,12 @@ end
 function love.keypressed(k)
   if k=="escape" then love.event.quit() end
   if k=="delete" then collectgarbage("collect") end
-  if k=="e" then 
+  if k=="e" then
     current_letter = 0
     charInteract() end
+  if k=="1" then
+    roomNumber = 1
+    drawWorld()
+  end
 end
+
