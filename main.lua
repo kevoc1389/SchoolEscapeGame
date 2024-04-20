@@ -1,7 +1,9 @@
 local bump       = require 'bump'
 local bump_debug = require 'bump_debug'
 
-local my_background = love.graphics.newImage('img_hero_header_background.jpg')
+local my_background = love.graphics.newImage('purpleBlock.png')
+local my_background1 = love.graphics.newImage('img_hero_header_background.jpg')
+local menu = "Computer Lab"
 
 local time_per_letter = .01
 local time_passed = 0
@@ -11,12 +13,6 @@ local characterMessage = "character dialogue: \ncrabs"
 if love.getVersion == nil or love.getVersion() < 11 then
   local origSetColor = love.graphics.setColor
   love.graphics.setColor = function (r, g, b, a)
-    return origSetColor(
-      math.floor(r * 256),
-      math.floor(g * 256),
-      math.floor(b * 256),
-      a ~= nil and math.floor(a * 256) or nil
-    )
   end
 end
 
@@ -34,7 +30,6 @@ local cols_len = 0 -- how many collisions are happening
 
 -- World creation
 local world = bump.newWorld()
---keira was here
 
 -- Message/debug functions
 local function drawMessage()
@@ -137,10 +132,8 @@ end
 
 -- Main LÖVE functions
 
-function love.load()
 
-math.randomseed(os.time())
-
+function makeRoom1()
   world:add(player, player.x, player.y, player.w, player.h)
 
   --world barriers
@@ -150,7 +143,13 @@ math.randomseed(os.time())
   addBlock(0,      600-32, 800, 32)
 
   addBlock(100, 100, 50, 50)
+end
 
+function love.load()
+
+math.randomseed(os.time())
+
+  
 end
 
 local function charInteract()
@@ -207,7 +206,8 @@ function love.keypressed(k)
   if k=="escape" then love.event.quit() end
   if k=="tab"    then shouldDrawDebug = not shouldDrawDebug end
   if k=="delete" then collectgarbage("collect") end
-  if k=="return" then 
+  if k=="e" then 
     current_letter = 0
   	charInteract() end
+  if k=="1" then makeRoom1() end
 end
