@@ -2,7 +2,7 @@ local bump       = require 'bump'
 local bump_debug = require 'bump_debug'
 
 local my_background = love.graphics.newImage('purpleBlock.png')
-local my_background1 = love.graphics.newImage('img_hero_header_background.jpg')
+local Final_Computer_Room_Backgroud = love.graphics.newImage('ComputerRoom.png')
 local menu = "Computer Lab"
 
 local time_per_letter = .01
@@ -13,6 +13,7 @@ local worldLoaded = false
 local characterMessage = "character dialogue: \ncrabs"
 
 local shouldDrawSpeechBox = false
+local shouldDrawWorld = false
 
 local cols_len = 0 -- how many collisions are happening
 
@@ -28,7 +29,7 @@ local function drawBox(box, r,g,b)
 end
 
 function love.load()
-  math.randomseed(os.time())
+      love.graphics.setBackgroundColor( 255, 255, 255 )
 end
 
 
@@ -92,6 +93,7 @@ end
     addBlock(100, 100, 50, 50)
    
     worldLoaded = true
+    shouldDrawWorld = true
   end
 end
 
@@ -132,9 +134,13 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.setColor(100,100,100,255)
   love.graphics.draw(my_background)
   if shouldDrawSpeechBox then
     drawSpeechBox()
+  end
+  if shouldDrawWorld then
+  	love.graphics.draw(Final_Computer_Room_Backgroud)
   end
   drawBlocks()
   drawPlayer()
