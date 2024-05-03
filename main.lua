@@ -12,6 +12,11 @@ local roomNumber = 0 --default is 0
 local worldLoaded = false
 local characterMessage = "character dialogue: \ncrabs"
 
+--current password is 1234
+local lock1PasscodeAttempt = {0, 0, 0, 0}
+local lock1PasscodeSelectedSlot = 1
+local isAtLock1Location = false
+
 local showBorders = false
 
 local shouldDrawSpeechBox = false
@@ -130,15 +135,13 @@ end
 end
 
 local function charInteract()
-  if player.x < 100 and player.y < 100 then
+  if player.x >= 0 and player.y >= 500 and player.x <= 40 and player.y <= 510 then
     shouldDrawSpeechBox = true
-    -- love.event.quit()
   end
 end
 
 local function speechUpdate(dt)
-  if player.x > 100 or player.y
-    > 100 then
+  if player.x < 0 or player.y < 500 or player.x > 40 or player.y > 510 then
     shouldDrawSpeechBox = false
   else
     time_passed = time_passed + dt
@@ -151,11 +154,15 @@ end
 
 local function drawSpeechBox()
   if roomNumber == 1 then
-    love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
+  -- love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
+   -- love.graphics.rectangle('fill', 0, 600-96, 800, 96)
+   -- love.graphics.setColor(0,0,0,255)
+   -- local chars = characterMessage:sub(1, current_letter)
+   -- love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
    love.graphics.rectangle('fill', 0, 600-96, 800, 96)
    love.graphics.setColor(0,0,0,255)
-   local chars = characterMessage:sub(1, current_letter)
-   love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
+   local chars1 = "slot: " .. lock1PasscodeSelectedSlot .. " slot1val: " .. lock1PasscodeAttempt[1] .. " slot2val: " .. lock1PasscodeAttempt[2] .. " slot3val: " .. lock1PasscodeAttempt[3] .. " slot4val: " .. lock1PasscodeAttempt[4]
+   love.graphics.print(chars1, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
   end
 end
 
@@ -166,21 +173,29 @@ local function drawPlayerLoc()
    love.graphics.print(chars1, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
 end
 
+
+local function checkPassword1()
+  if lock1PasscodeAttempt[1] == 1 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 3 and lock1PasscodeAttempt[4] == 4 then
+    love.event.quit()
+  end
+end 
+
 function love.update(dt)
   cols_len = 0
   updatePlayer(dt)
   speechUpdate(dt)
+  checkPassword1()
 end
 
 function love.draw()
 love.graphics.setColor(100,100,100,255)
   love.graphics.draw(my_background)
-  if shouldDrawSpeechBox then
-    drawSpeechBox()
-  end
   if shouldDrawWorld then
   	love.graphics.setColor(100,100,100,255)
   	love.graphics.draw(Final_Computer_Room_Backgroud)
+    if shouldDrawSpeechBox == true then
+      drawSpeechBox()
+    end
     if showBorders == true then
       drawPlayerLoc()
     end
@@ -194,7 +209,7 @@ function love.keypressed(k)
   if k=="escape" then love.event.quit() end
   if k=="delete" then collectgarbage("collect") end
   if k=="e" then
-    current_letter = 0
+    -- current_letter = 0
     charInteract() end
   if k=="1" then
     roomNumber = 1
@@ -205,6 +220,34 @@ function love.keypressed(k)
   end
   if k=="v" then
   	showBorders = true
+  end
+  if k=="right" then
+    if 1 + lock1PasscodeSelectedSlot > 4 then
+      lock1PasscodeSelectedSlot = 1
+    else 
+      lock1PasscodeSelectedSlot = 1 + lock1PasscodeSelectedSlot
+    end
+  end
+  if k=="left" then
+    if lock1PasscodeSelectedSlot - 1 < 1 then
+      lock1PasscodeSelectedSlot = 4
+    else 
+      lock1PasscodeSelectedSlot = lock1PasscodeSelectedSlot - 1
+    end
+  end
+  if k=="down" then
+    if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] < 1 then
+      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 6
+    else 
+      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = lock1PasscodeAttempt[lock1PasscodeSelectedSlot] -1
+    end
+  end
+  if k=="up" then
+    if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] > 5 then
+      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 1
+    else 
+      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = lock1PasscodeAttempt[lock1PasscodeSelectedSlot] + 1
+    end
   end
 end
 
