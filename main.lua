@@ -120,6 +120,8 @@ end
     addBlock(90,      288, 75, 50)
     addBlock(338,      280, 35, 50)
     addBlock(400,      305, 120, 35)
+    addBlock(0, 530, 140, 70)
+    addBlock(695, 530, 105, 70)
 
    
     worldLoaded = true
@@ -179,7 +181,9 @@ love.graphics.setColor(100,100,100,255)
   if shouldDrawWorld then
   	love.graphics.setColor(100,100,100,255)
   	love.graphics.draw(Final_Computer_Room_Backgroud)
-  	-- drawPlayerLoc()
+    if showBorders == true then
+      drawPlayerLoc()
+    end
   end
   drawBlocks()
   drawPlayer()
