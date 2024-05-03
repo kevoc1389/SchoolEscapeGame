@@ -2,7 +2,7 @@ local bump       = require 'bump'
 local bump_debug = require 'bump_debug'
 
 local my_background = love.graphics.newImage('purpleBlock.png')
-local Final_Computer_Room_Backgroud = love.graphics.newImage('ComputerRoom.png')
+local Final_Computer_Room_Backgroud = love.graphics.newImage('RoomFinal.png')
 local menu = "Computer Lab"
 
 local time_per_letter = .01
@@ -11,6 +11,8 @@ local current_letter = 0
 local roomNumber = 0 --default is 0
 local worldLoaded = false
 local characterMessage = "character dialogue: \ncrabs"
+
+local showBorders = false
 
 local shouldDrawSpeechBox = false
 local shouldDrawWorld = false
@@ -22,7 +24,17 @@ local world = bump.newWorld()
 
 -- helper function
 local function drawBox(box, r,g,b)
-  love.graphics.setColor(r,g,b,0.25)
+  love.graphics.setColor(r,g,b,0.001)
+  love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
+  if showBorders == true then
+  love.graphics.setColor(r,g,b)
+  love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
+end
+end
+
+--j for player
+local function drawBoxPlayer(box, r,g,b)
+  love.graphics.setColor(r,g,b,0.001)
   love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
   love.graphics.setColor(r,g,b)
   love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
@@ -34,7 +46,7 @@ end
 
 
 -- Player functions
-local player = { x=50,y=50,w=20,h=20, speed = 200 }
+local player = { x=400,y=200,w=20,h=20, speed = 200 }
 
 local function updatePlayer(dt)
   local speed = player.speed
@@ -59,7 +71,7 @@ local function updatePlayer(dt)
 end
 
 local function drawPlayer()
-  drawBox(player, 0, 1, 0)
+  drawBoxPlayer(player, 0, 1, 0)
 end
 
 -- Block functions
@@ -84,13 +96,31 @@ end
   local function drawWorld()
   if roomNumber == 1 and worldLoaded == false then
     world:add(player, player.x, player.y, player.w, player.h)
+    --world borders
+    addBlock(0,       0,     800, 1)
+    addBlock(0,      1,      1, 600)
+    addBlock(800, 1,      1, 600)
+    addBlock(0,      600, 800, 1)
 
-    addBlock(0,       0,     800, 32)
-    addBlock(0,      32,      32, 600-32*2)
-    addBlock(800-32, 32,      32, 600-32*2)
-    addBlock(0,      600-32, 800, 32)
+    --all the object borders. 
+    --P.S. This took so freaking long, appx 1.5 hr
+    addBlock(0,      0, 222, 113)
+    addBlock(271,      0, 285, 87)
+    addBlock(595,      0, 205, 110)
+    addBlock(340,      125, 160, 50)
+    addBlock(560,      195, 40, 55)
+    addBlock(615,      150, 180, 30)
+    addBlock(650,      190, 115, 40)
+    addBlock(760,      195, 45, 155)
+    addBlock(575,      400, 170, 60)
+    addBlock(745,      400, 55, 140)
+    addBlock(375,      405, 110, 65)
+    addBlock(0,      115, 60, 385)
+    addBlock(60,      345, 100, 115)
+    addBlock(90,      288, 75, 50)
+    addBlock(338,      280, 35, 50)
+    addBlock(400,      305, 120, 35)
 
-    addBlock(100, 100, 50, 50)
    
     worldLoaded = true
     shouldDrawWorld = true
@@ -122,9 +152,16 @@ local function drawSpeechBox()
     love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
    love.graphics.rectangle('fill', 0, 600-96, 800, 96)
    love.graphics.setColor(0,0,0,255)
-    local chars = characterMessage:sub(1, current_letter)
+   local chars = characterMessage:sub(1, current_letter)
    love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
   end
+end
+
+local function drawPlayerLoc()
+   love.graphics.rectangle('fill', 0, 600-96, 800, 96)
+   love.graphics.setColor(0,0,0,255)
+   local chars1 = "player x: " .. player.x .. " player y: " .. player.y
+   love.graphics.print(chars1, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
 end
 
 function love.update(dt)
@@ -134,13 +171,15 @@ function love.update(dt)
 end
 
 function love.draw()
-	love.graphics.setColor(100,100,100,255)
+love.graphics.setColor(100,100,100,255)
   love.graphics.draw(my_background)
   if shouldDrawSpeechBox then
     drawSpeechBox()
   end
   if shouldDrawWorld then
+  	love.graphics.setColor(100,100,100,255)
   	love.graphics.draw(Final_Computer_Room_Backgroud)
+  	-- drawPlayerLoc()
   end
   drawBlocks()
   drawPlayer()
@@ -156,6 +195,12 @@ function love.keypressed(k)
   if k=="1" then
     roomNumber = 1
     drawWorld()
+  end
+  if k=="c" then
+  	showBorders = false
+  end
+  if k=="v" then
+  	showBorders = true
   end
 end
 
