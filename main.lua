@@ -4,6 +4,11 @@ local bump_debug = require 'bump_debug'
 local my_background = love.graphics.newImage('purpleBlock.png')
 local Final_Computer_Room_Backgroud = love.graphics.newImage('RoomFinal.png')
 local Final_Ryan_Image = love.graphics.newImage('ryan.jpg')
+local Final_Clue = love.graphics.newImage('cluepicture.png')
+local Final_Code_1 = love.graphics.newImage('code1.png')
+local Final_Code_2 = love.graphics.newImage('code2.png')
+local Final_Code_3 = love.graphics.newImage('code3.png')
+local Final_LockScreen = love.graphics.newImage('lockscreen.jpg')
 local menu = "Computer Lab"
 
 local time_per_letter = .01
@@ -13,11 +18,19 @@ local roomNumber = 0 --default is 0
 local worldLoaded = false
 local characterMessage = "character dialogue: \ncrabs"
 local loadRyan = false
+local loadCode1 = false
+local loadCode2 = false
+local loadCode3 = false
+local loadClue = false
 
 --current password is 1234
 local lock1PasscodeAttempt = {0, 0, 0, 0}
 local lock1PasscodeSelectedSlot = 1
 local isAtLock1Location = false
+--passworld is 386
+local lock2PasscodeAttempt = {0, 0, 0}
+local lock2PasscodeSelectedSlot = 1
+local isAtLock2Location = false
 
 local showBorders = false
 
@@ -143,20 +156,44 @@ local function charInteract()
   if player.x >= 540 and player.y >= 175 and player.x <= 600 and player.y <= 250 then
     loadRyan = true
   end
+  if player.x >= 710 and player.y >= 230 and player.x <= 740 and player.y <= 230 then
+    loadCode1 = true
+  end
+  if player.x >= 318 and player.y >= 258 and player.x <= 372 and player.y <= 330 then
+    loadCode2 = true
+  end
+  if player.x >= 60 and player.y >= 460 and player.x <= 60 and player.y <= 500 then
+    loadCode3 = true
+  end
+  if player.x >= 760 and player.y >= 350 and player.x <= 780 and player.y <= 350 then
+    loadClue = true
+  end
+  if player.x >= 370 and player.y >= 470 and player.x <= 465 and player.y <= 470 then
+    shouldDrawSpeechBox2 = true
+  end
 end
 
 local function drawUpdate(dt)
   if player.x < 222 or player.y < 1 or player.x > 251 or player.y > 65 then
     shouldDrawSpeechBox = false
   end
+  if player.x < 370 or player.y < 470 or player.x > 465 or player.y > 470 then
+    shouldDrawSpeechBox2 = false
+  end
   if player.x < 540 or player.y < 175 or player.x > 600 or player.y > 250 then
     loadRyan = false
-  -- else
-  --   time_passed = time_passed + dt
-  --   if time_passed >= time_per_letter then
-  --     time_passed = 0
-  --     current_letter = current_letter + 1
-  --   end
+  end
+  if player.x < 710 or player.y < 230 or player.x > 740 or player.y > 230 then
+    loadCode1 = false
+  end
+  if player.x < 318 or player.y < 258 or player.x > 372 or player.y > 330 then
+    loadCode2 = false
+  end
+  if player.x < 60 or player.y < 460 or player.x > 60 or player.y > 500 then
+    loadCode3 = false
+  end
+  if player.x < 760 or player.y < 350 or player.x > 780 or player.y > 350 then
+    loadClue = false
   end
 end
 
@@ -174,6 +211,20 @@ local function drawSpeechBox()
   end
 end
 
+local function drawSpeechBox2()
+  if roomNumber == 1 then
+  -- love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
+   -- love.graphics.rectangle('fill', 0, 600-96, 800, 96)
+   -- love.graphics.setColor(0,0,0,255)
+   -- local chars = characterMessage:sub(1, current_letter)
+   -- love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
+   love.graphics.rectangle('fill', 0, 600-96, 800, 96)
+   love.graphics.setColor(0,0,0,255)
+   local chars1 = "Insert Computer Password: slot: " .. lock2PasscodeSelectedSlot .. " slot1val: " .. lock2PasscodeAttempt[1] .. " slot2val: " .. lock2PasscodeAttempt[2] .. " slot3val: " .. lock2PasscodeAttempt[3]
+   love.graphics.print(chars1, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
+  end
+end
+
 local function drawPlayerLoc()
    love.graphics.rectangle('fill', 0, 600-96, 800, 96)
    love.graphics.setColor(0,0,0,255)
@@ -186,17 +237,40 @@ local function checkPassword1()
   if lock1PasscodeAttempt[1] == 1 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 3 and lock1PasscodeAttempt[4] == 4 then
     love.event.quit()
   end
-end 
+end
+
+local function checkPassword2()
+  if lock2PasscodeAttempt[1] == 3 and lock2PasscodeAttempt[2] == 8 and lock2PasscodeAttempt[3] == 6 then
+    love.event.quit()
+  end
+end
 
 local function drawRyan()
   love.graphics.draw(Final_Ryan_Image, 100, 100)
 end
-  
+
+local function drawClue()
+  love.graphics.draw(Final_Clue, 100, 100)
+end
+local function drawCode1()
+  love.graphics.draw(Final_Code_1, 100, 100)
+end
+local function drawCode2()
+  love.graphics.draw(Final_Code_2, 100, 100)
+end
+local function drawCode3()
+  love.graphics.draw(Final_Code_3, 100, 100)
+end
+local function drawLockScreen()
+  love.graphics.draw(Final_LockScreen, 100, 100)
+end
+ 
 function love.update(dt)
   cols_len = 0
   updatePlayer(dt)
   drawUpdate(dt)
   checkPassword1()
+  checkPassword2()
 end
 
 function love.draw()
@@ -210,6 +284,22 @@ love.graphics.setColor(100,100,100,255)
     end
     if loadRyan == true then
     drawRyan()
+  end
+  if loadClue == true then
+    drawClue()
+  end
+  if loadCode1 == true then
+    drawCode1()
+  end
+  if loadCode2 == true then
+    drawCode2()
+  end
+  if loadCode3 == true then
+    drawCode3()
+  end
+  if shouldDrawSpeechBox2 == true then
+  	drawLockScreen()
+  	drawSpeechBox2()
   end
     if showBorders == true then
       drawPlayerLoc()
@@ -237,32 +327,69 @@ function love.keypressed(k)
   	showBorders = true
   end
   if k=="right" then
+  	if shouldDrawSpeechBox == true then
     if 1 + lock1PasscodeSelectedSlot > 4 then
       lock1PasscodeSelectedSlot = 1
     else 
       lock1PasscodeSelectedSlot = 1 + lock1PasscodeSelectedSlot
     end
+	end
+	if shouldDrawSpeechBox2 == true then
+    if 1 + lock2PasscodeSelectedSlot > 3 then
+      lock2PasscodeSelectedSlot = 1
+    else 
+      lock2PasscodeSelectedSlot = 1 + lock2PasscodeSelectedSlot
+    end
+	end
   end
   if k=="left" then
+  	if shouldDrawSpeechBox == true then
     if lock1PasscodeSelectedSlot - 1 < 1 then
       lock1PasscodeSelectedSlot = 4
     else 
       lock1PasscodeSelectedSlot = lock1PasscodeSelectedSlot - 1
     end
+	end
+	if shouldDrawSpeechBox2 == true then
+    if lock2PasscodeSelectedSlot - 1 < 1 then
+      lock2PasscodeSelectedSlot = 3
+    else 
+      lock2PasscodeSelectedSlot = lock2PasscodeSelectedSlot - 1
+    end
+	end
+
   end
   if k=="down" then
+  	if shouldDrawSpeechBox == true then
     if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] < 1 then
-      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 6
+      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 4
     else 
       lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = lock1PasscodeAttempt[lock1PasscodeSelectedSlot] -1
     end
+	end
+	if shouldDrawSpeechBox2 == true then
+    if lock2PasscodeAttempt[lock2PasscodeSelectedSlot] < 1 then
+      lock2PasscodeAttempt[lock2PasscodeSelectedSlot] = 9
+    else 
+      lock2PasscodeAttempt[lock2PasscodeSelectedSlot] = lock2PasscodeAttempt[lock2PasscodeSelectedSlot] -1
+    end
+	end
   end
   if k=="up" then
-    if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] > 5 then
+  	if shouldDrawSpeechBox == true then
+    if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] > 3 then
       lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 1
     else 
       lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = lock1PasscodeAttempt[lock1PasscodeSelectedSlot] + 1
     end
+	end
+	if shouldDrawSpeechBox2 == true then
+    if lock2PasscodeAttempt[lock2PasscodeSelectedSlot] > 8 then
+      lock2PasscodeAttempt[lock2PasscodeSelectedSlot] = 1
+    else 
+      lock2PasscodeAttempt[lock2PasscodeSelectedSlot] = lock2PasscodeAttempt[lock2PasscodeSelectedSlot] + 1
+    end
+	end
   end
 end
 
