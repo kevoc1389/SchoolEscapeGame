@@ -3,6 +3,7 @@ local bump_debug = require 'bump_debug'
 
 local my_background = love.graphics.newImage('purpleBlock.png')
 local Final_Computer_Room_Backgroud = love.graphics.newImage('RoomFinal.png')
+local Final_Ryan_Image = love.graphics.newImage('ryan.jpg')
 local menu = "Computer Lab"
 
 local time_per_letter = .01
@@ -11,6 +12,7 @@ local current_letter = 0
 local roomNumber = 0 --default is 0
 local worldLoaded = false
 local characterMessage = "character dialogue: \ncrabs"
+local loadRyan = false
 
 --current password is 1234
 local lock1PasscodeAttempt = {0, 0, 0, 0}
@@ -135,20 +137,26 @@ end
 end
 
 local function charInteract()
-  if player.x >= 0 and player.y >= 500 and player.x <= 40 and player.y <= 510 then
+  if player.x >= 222 and player.y >= 1 and player.x <= 251 and player.y <= 65 then
     shouldDrawSpeechBox = true
+  end
+  if player.x >= 540 and player.y >= 175 and player.x <= 600 and player.y <= 250 then
+    loadRyan = true
   end
 end
 
-local function speechUpdate(dt)
-  if player.x < 0 or player.y < 500 or player.x > 40 or player.y > 510 then
+local function drawUpdate(dt)
+  if player.x < 222 or player.y < 1 or player.x > 251 or player.y > 65 then
     shouldDrawSpeechBox = false
-  else
-    time_passed = time_passed + dt
-    if time_passed >= time_per_letter then
-      time_passed = 0
-      current_letter = current_letter + 1
-    end
+  end
+  if player.x < 540 or player.y < 175 or player.x > 600 or player.y > 250 then
+    loadRyan = false
+  -- else
+  --   time_passed = time_passed + dt
+  --   if time_passed >= time_per_letter then
+  --     time_passed = 0
+  --     current_letter = current_letter + 1
+  --   end
   end
 end
 
@@ -180,10 +188,14 @@ local function checkPassword1()
   end
 end 
 
+local function drawRyan()
+  love.graphics.draw(Final_Ryan_Image, 100, 100)
+end
+  
 function love.update(dt)
   cols_len = 0
   updatePlayer(dt)
-  speechUpdate(dt)
+  drawUpdate(dt)
   checkPassword1()
 end
 
@@ -196,12 +208,15 @@ love.graphics.setColor(100,100,100,255)
     if shouldDrawSpeechBox == true then
       drawSpeechBox()
     end
+    if loadRyan == true then
+    drawRyan()
+  end
     if showBorders == true then
       drawPlayerLoc()
     end
+    drawBlocks()
+    drawPlayer()  
   end
-  drawBlocks()
-  drawPlayer()
 end
 
 -- Non-player keypresses
