@@ -9,6 +9,11 @@ local Final_Code_1 = love.graphics.newImage('code1.png')
 local Final_Code_2 = love.graphics.newImage('code2.png')
 local Final_Code_3 = love.graphics.newImage('code3.png')
 local Final_LockScreen = love.graphics.newImage('lockscreen.jpg')
+local Final_Question_1 = love.graphics.newImage('image.png')
+local Final_Question_2 = love.graphics.newImage('image1.png')
+local Final_Question_3 = love.graphics.newImage('image3.png')
+local Final_Question_4 = love.graphics.newImage('image4.png')
+local Final_Question = love.graphics.newImage('finalquestion.png')
 local menu = "Computer Lab"
 
 local time_per_letter = .01
@@ -22,8 +27,10 @@ local loadCode1 = false
 local loadCode2 = false
 local loadCode3 = false
 local loadClue = false
+local solvedPassword = false
+local questionLoaded = 1
 
---current password is 1234
+--current password is 2213
 local lock1PasscodeAttempt = {0, 0, 0, 0}
 local lock1PasscodeSelectedSlot = 1
 local isAtLock1Location = false
@@ -199,11 +206,6 @@ end
 
 local function drawSpeechBox()
   if roomNumber == 1 then
-  -- love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
-   -- love.graphics.rectangle('fill', 0, 600-96, 800, 96)
-   -- love.graphics.setColor(0,0,0,255)
-   -- local chars = characterMessage:sub(1, current_letter)
-   -- love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
    love.graphics.rectangle('fill', 0, 600-96, 800, 96)
    love.graphics.setColor(0,0,0,255)
    local chars1 = "slot: " .. lock1PasscodeSelectedSlot .. " slot1val: " .. lock1PasscodeAttempt[1] .. " slot2val: " .. lock1PasscodeAttempt[2] .. " slot3val: " .. lock1PasscodeAttempt[3] .. " slot4val: " .. lock1PasscodeAttempt[4]
@@ -213,11 +215,6 @@ end
 
 local function drawSpeechBox2()
   if roomNumber == 1 then
-  -- love.graphics.draw(love.graphics.newImage("larry.jpg"), 100, 100)
-   -- love.graphics.rectangle('fill', 0, 600-96, 800, 96)
-   -- love.graphics.setColor(0,0,0,255)
-   -- local chars = characterMessage:sub(1, current_letter)
-   -- love.graphics.print(chars, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
    love.graphics.rectangle('fill', 0, 600-96, 800, 96)
    love.graphics.setColor(0,0,0,255)
    local chars1 = "Insert Computer Password: slot: " .. lock2PasscodeSelectedSlot .. " slot1val: " .. lock2PasscodeAttempt[1] .. " slot2val: " .. lock2PasscodeAttempt[2] .. " slot3val: " .. lock2PasscodeAttempt[3]
@@ -234,14 +231,14 @@ end
 
 
 local function checkPassword1()
-  if lock1PasscodeAttempt[1] == 1 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 3 and lock1PasscodeAttempt[4] == 4 then
+  if lock1PasscodeAttempt[1] == 2 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 1 and lock1PasscodeAttempt[4] == 3 then
     love.event.quit()
   end
 end
 
 local function checkPassword2()
   if lock2PasscodeAttempt[1] == 3 and lock2PasscodeAttempt[2] == 8 and lock2PasscodeAttempt[3] == 6 then
-    love.event.quit()
+    solvedPassword = true
   end
 end
 
@@ -263,6 +260,17 @@ local function drawCode3()
 end
 local function drawLockScreen()
   love.graphics.draw(Final_LockScreen, 100, 100)
+end
+local function drawQuestions()
+	if questionLoaded == 1 then
+	love.graphics.draw(Final_Question_1, 100, 100)
+	elseif questionLoaded == 2 then	
+	love.graphics.draw(Final_Question_2, 100, 100)
+	elseif questionLoaded == 3 then
+	love.graphics.draw(Final_Question_3, 100, 100)
+	elseif questionLoaded == 4 then
+	love.graphics.draw(Final_Question_4, 100, 100)
+end
 end
  
 function love.update(dt)
@@ -297,9 +305,12 @@ love.graphics.setColor(100,100,100,255)
   if loadCode3 == true then
     drawCode3()
   end
-  if shouldDrawSpeechBox2 == true then
+  if shouldDrawSpeechBox2 == true and solvedPassword == false then
   	drawLockScreen()
   	drawSpeechBox2()
+  end
+  if solvedPassword == true and shouldDrawSpeechBox2 then
+  	drawQuestions()
   end
     if showBorders == true then
       drawPlayerLoc()
@@ -341,6 +352,13 @@ function love.keypressed(k)
       lock2PasscodeSelectedSlot = 1 + lock2PasscodeSelectedSlot
     end
 	end
+	if solvedPassword == true and shouldDrawSpeechBox2 == true then
+		if 1 + questionLoaded > 4 then
+			questionLoaded = 1
+		else
+			questionLoaded = questionLoaded + 1
+		end
+	end
   end
   if k=="left" then
   	if shouldDrawSpeechBox == true then
@@ -357,12 +375,19 @@ function love.keypressed(k)
       lock2PasscodeSelectedSlot = lock2PasscodeSelectedSlot - 1
     end
 	end
-
+	if solvedPassword == true and shouldDrawSpeechBox2 == true then
+		if  questionLoaded - 1 < 1 then
+			questionLoaded = 4
+		else
+			questionLoaded = questionLoaded - 1
+		end
+	end
   end
+
   if k=="down" then
   	if shouldDrawSpeechBox == true then
     if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] < 1 then
-      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 4
+      lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 5
     else 
       lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = lock1PasscodeAttempt[lock1PasscodeSelectedSlot] -1
     end
@@ -377,7 +402,7 @@ function love.keypressed(k)
   end
   if k=="up" then
   	if shouldDrawSpeechBox == true then
-    if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] > 3 then
+    if lock1PasscodeAttempt[lock1PasscodeSelectedSlot] > 4 then
       lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = 1
     else 
       lock1PasscodeAttempt[lock1PasscodeSelectedSlot] = lock1PasscodeAttempt[lock1PasscodeSelectedSlot] + 1
