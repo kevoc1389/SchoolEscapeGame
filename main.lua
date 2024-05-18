@@ -14,6 +14,8 @@ local Final_Question_2 = love.graphics.newImage('image1.png')
 local Final_Question_3 = love.graphics.newImage('image3.png')
 local Final_Question_4 = love.graphics.newImage('image4.png')
 local Final_Question = love.graphics.newImage('finalquestion.png')
+local Final_Character = love.graphics.newImage('littleMan.png')
+local Final_Character_Reversed = love.graphics.newImage('littleManReversed.png')
 local menu = "Computer Lab"
 
 local time_per_letter = .01
@@ -29,6 +31,7 @@ local loadCode3 = false
 local loadClue = false
 local solvedPassword = false
 local questionLoaded = 1
+local isMovingLeft = false
 
 --current password is 2213
 local lock1PasscodeAttempt = {0, 0, 0, 0}
@@ -41,7 +44,7 @@ local isAtLock2Location = false
 
 local showBorders = false
 
-local shouldDrawSpeechBox = false
+local shouldDrawSpeechBox = falses
 local shouldDrawWorld = false
 
 local cols_len = 0 -- how many collisions are happening
@@ -60,12 +63,7 @@ end
 end
 
 --j for player
-local function drawBoxPlayer(box, r,g,b)
-  love.graphics.setColor(r,g,b,0.001)
-  love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-  love.graphics.setColor(r,g,b)
-  love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
-end
+
 
 function love.load()
       love.graphics.setBackgroundColor( 255, 255, 255 )
@@ -81,8 +79,10 @@ local function updatePlayer(dt)
   if roomNumber ~= 0 then
     local dx, dy = 0, 0
     if love.keyboard.isDown('d') then
+    	isMovingLeft = false
       dx = speed * dt
     elseif love.keyboard.isDown('a') then
+    	isMovingLeft = true
       dx = -speed * dt
     end
     if love.keyboard.isDown('s') then
@@ -97,9 +97,22 @@ local function updatePlayer(dt)
   end
 end
 
+local function drawBoxPlayer(box, r,g,b)
+  love.graphics.setColor(r,g,b,0.001)
+  love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
+  love.graphics.setColor(r,g,b)
+  love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
+  love.graphics.setColor(100,100,100,255)
+  if isMovingLeft == true then
+  	love.graphics.draw(Final_Character_Reversed, player.x, player.y)
+  elseif isMovingLeft == false then
+  	love.graphics.draw(Final_Character, player.x, player.y)
+  end
+end
+
 local function drawPlayer()
   drawBoxPlayer(player, 0, 1, 0)
-end
+end	
 
 -- Block functions
 
@@ -208,7 +221,7 @@ local function drawSpeechBox()
   if roomNumber == 1 then
    love.graphics.rectangle('fill', 0, 600-96, 800, 96)
    love.graphics.setColor(0,0,0,255)
-   local chars1 = "slot: " .. lock1PasscodeSelectedSlot .. " slot1val: " .. lock1PasscodeAttempt[1] .. " slot2val: " .. lock1PasscodeAttempt[2] .. " slot3val: " .. lock1PasscodeAttempt[3] .. " slot4val: " .. lock1PasscodeAttempt[4]
+   local chars1 = "Insert Final Password: slot: " .. lock1PasscodeSelectedSlot .. " slot1val: " .. lock1PasscodeAttempt[1] .. " slot2val: " .. lock1PasscodeAttempt[2] .. " slot3val: " .. lock1PasscodeAttempt[3] .. " slot4val: " .. lock1PasscodeAttempt[4]
    love.graphics.print(chars1, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
   end
 end
@@ -228,7 +241,6 @@ local function drawPlayerLoc()
    local chars1 = "player x: " .. player.x .. " player y: " .. player.y
    love.graphics.print(chars1, 50, 600-96, 0, 1, 1, 0, 0, 0, 0)
 end
-
 
 local function checkPassword1()
   if lock1PasscodeAttempt[1] == 2 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 1 and lock1PasscodeAttempt[4] == 3 then
@@ -270,9 +282,9 @@ local function drawQuestions()
 	love.graphics.draw(Final_Question_3, 100, 100)
 	elseif questionLoaded == 4 then
 	love.graphics.draw(Final_Question_4, 100, 100)
+	end
 end
-end
- 
+
 function love.update(dt)
   cols_len = 0
   updatePlayer(dt)
