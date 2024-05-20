@@ -1,7 +1,8 @@
 local bump       = require 'bump'
 local bump_debug = require 'bump_debug'
 
-local my_background = love.graphics.newImage('purpleBlock.png')
+local my_background = love.graphics.newImage('startScreen.png')
+local my_endScreen = love.graphics.newImage('endScreen.png')
 local Final_Computer_Room_Backgroud = love.graphics.newImage('RoomFinal.png')
 local Final_Ryan_Image = love.graphics.newImage('ryan.jpg')
 local Final_Clue = love.graphics.newImage('cluepicture.png')
@@ -244,7 +245,7 @@ end
 
 local function checkPassword1()
   if lock1PasscodeAttempt[1] == 2 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 1 and lock1PasscodeAttempt[4] == 3 then
-    love.event.quit()
+  love.graphics.draw(my_endScreen)
   end
 end
 
