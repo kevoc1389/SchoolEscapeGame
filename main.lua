@@ -18,6 +18,7 @@ local Final_Question = love.graphics.newImage('finalquestion.png')
 local Final_Character = love.graphics.newImage('littleMan.png')
 local Final_Character_Reversed = love.graphics.newImage('littleManReversed.png')
 local menu = "Computer Lab"
+local drawEndScreen = false
 
 local time_per_letter = .01
 local time_passed = 0
@@ -245,7 +246,7 @@ end
 
 local function checkPassword1()
   if lock1PasscodeAttempt[1] == 2 and lock1PasscodeAttempt[2] == 2 and lock1PasscodeAttempt[3] == 1 and lock1PasscodeAttempt[4] == 3 then
-  love.graphics.draw(my_endScreen)
+    drawEndScreen = true
   end
 end
 
@@ -297,7 +298,9 @@ end
 function love.draw()
 love.graphics.setColor(100,100,100,255)
   love.graphics.draw(my_background)
-  if shouldDrawWorld then
+  if drawEndScreen then
+    love.graphics.draw(my_endScreen)
+  else if shouldDrawWorld then
   	love.graphics.setColor(100,100,100,255)
   	love.graphics.draw(Final_Computer_Room_Backgroud)
     if shouldDrawSpeechBox == true then
@@ -331,6 +334,7 @@ love.graphics.setColor(100,100,100,255)
     drawBlocks()
     drawPlayer()  
   end
+end
 end
 
 -- Non-player keypresses
